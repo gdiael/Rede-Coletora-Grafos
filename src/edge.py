@@ -49,10 +49,6 @@ class Edge:
         depth_diff = (v1.elevation - fin_depth) - (v2.elevation - ini_depth)
         return depth_diff / dist
 
-    def __str__(self):
-        #Edge = 01;C01;01;02;100;PVC;0.0;0.0;;False
-        return f"{self.id};{self.name};{self.inicial_id};{self.final_id};{self.diameter};{self.material};{self.inicial_depth};{self.final_depth};{self.description};{self.is_reversed}"
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -65,3 +61,22 @@ class Edge:
             "final_depth": self.final_depth,
             "description": self.description,
         }
+    
+    @staticmethod
+    def from_str(data: str) -> Edge:
+        parts = data.split(";")
+        _id = parts[0]
+        name = parts[1]
+        inicial_id = parts[2]
+        final_id = parts[3]
+        diameter = int(parts[4])
+        material = parts[5]
+        inicial_depth = float(parts[6])
+        final_depth = float(parts[7])
+        desc = parts[8]
+        is_reversed = (parts[9] != "False")
+        return Edge(_id, name, inicial_id, final_id, diameter, material, inicial_depth, final_depth, desc, is_reversed)
+
+    def __str__(self):
+        #Edge = 01;C01;01;02;100;PVC;0.0;0.0;;False
+        return f"{self.id};{self.name};{self.inicial_id};{self.final_id};{self.diameter};{self.material};{self.inicial_depth};{self.final_depth};{self.description};{self.is_reversed}"
