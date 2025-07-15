@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass, field
 
 @dataclass
@@ -22,7 +21,7 @@ class Vertex:
             self.neighbors.remove(neighbor_id)
 
     @staticmethod
-    def form_str(data: str) -> Vertex:
+    def form_str(data: str):
         parts = data.split(";")
 
         _id = parts[0]
@@ -53,7 +52,7 @@ class Vertex:
 
     def __str__(self):
         #vertex = 01;PV 01;34.0;23.4;11.9;0.0;;id1;id2
-        out: str = f"{self.id};{self.name};{self.x};{self.y};{self.elevation};{self.description}"
+        out: str = f"{self.id};{self.name};{self.x:.3f};{self.y:.3f};{self.elevation:.3f};{self.description}"
         for vet_id in self.neighbors:
             out += f";{vet_id}"
         return out

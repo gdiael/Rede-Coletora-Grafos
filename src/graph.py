@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass, field
 
 from vertex import Vertex
@@ -38,17 +37,16 @@ class Graph:
     def save_to_file(self, filepath: str):
         filepath = f"{filepath}/{self.name}.txt"
         with open(filepath, "w", encoding="utf-8") as f:
-            # Escreve a primeira linha com as quantidades
             f.write(f"{len(self._vertex_dict)} {len(self._edge_dict)}\n")
-            # Escreve os vértices
+
             for vert in self._vertex_dict.values():
                 f.write(str(vert) + "\n")
-            # Escreve as arestas
+
             for edge in self._edge_dict.values():
                 f.write(str(edge) + "\n")
 
     @staticmethod
-    def load_from_file(filepath: str) -> Graph:
+    def load_from_file(filepath: str):
         import os
 
         name = os.path.splitext(os.path.basename(filepath))[0]
