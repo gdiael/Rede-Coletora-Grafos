@@ -22,6 +22,7 @@ class Graph:
         self._edge_dict[edge.id] = edge
 
     def print_this(self):
+        print(f"Graph: {self.name}")
         for id, vert in self._vertex_dict.items():
             print(vert)
 
@@ -31,7 +32,7 @@ class Graph:
     def get_vertices(self) -> dict[str, Vertex]:
         return self._vertex_dict
     
-    def get_edges(self) -> dict[str, Vertex]:
+    def get_edges(self) -> dict[str, Edge]:
         return self._edge_dict
     
     def save_to_file(self, filepath: str):
@@ -49,7 +50,8 @@ class Graph:
     def load_from_file(filepath: str):
         import os
 
-        name = os.path.splitext(os.path.basename(filepath))[0]
+        file_name = os.path.basename(filepath)
+        name = os.path.splitext(file_name)[0]
         gf = Graph(name)
 
         with open(filepath, "r", encoding="utf-8") as f:

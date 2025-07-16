@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from config import WEIGHT_LENGTH_FACTOR, WEIGHT_DIAMETER_FACTOR, WEIGHT_DEPTH_FACTOR
+
 from vertex import Vertex
 
 @dataclass
@@ -14,6 +16,7 @@ class Edge:
     inicial_depth: float = 0.0
     final_depth: float = 0.0
     description: str = ""
+    weight: float = 0.0
 
     def inicial_vertex(self, vertices: dict[str, Vertex]) -> Vertex:
         return vertices[self.inicial_id]
@@ -38,6 +41,13 @@ class Edge:
             return 0.0
         depth_diff = (v1.elevation - self.final_depth) - (v2.elevation - self.inicial_depth)
         return depth_diff / dist
+    
+    def update_weight(self, vertices: dict[str, Vertex]):
+        length = self.get_horizontal_length(vertices)
+        mid_depth = (self.inicial_depth + self.final_depth) / 2.0
+        self.weight = WEIGHT_LENGTH_FACTOR * length
+        self.weight += WEIGHT_DIAMETER_FACTOR * self.diameter
+        self.weight += WEIGHT_DEPTH_FACTOR * mid_depth
 
     def reverse(self):
         aux_id: str = self.inicial_id
@@ -47,6 +57,13 @@ class Edge:
         aux_depth: float = self.inicial_depth
         self.inicial_depth = self.final_depth
         self.inicial_depth = aux_depth
+
+    def is_adjacent(self, e2: 'Edge'):
+        if self.inicial_id == e2.inicial_id: return True
+        if self.inicial_id == e2.final_id: return True
+        if self.final_id == e2.inicial_id: return True
+        if self.final_id == e2.final_id: return True
+        return False
 
     def to_dict(self):
         return {
