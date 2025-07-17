@@ -34,7 +34,25 @@ class Graph:
     
     def get_edges(self) -> dict[str, Edge]:
         return self._edge_dict
-    
+
+    def reset_depth(self):
+        for edge in self._edge_dict.values():
+            edge.inicial_depth = 0.0
+            edge.final_depth = 0.0
+
+    def copy_me(self) -> 'Graph':
+        new_graph = Graph(self.name)
+        
+        for vert in self._vertex_dict.values():
+            new_graph.add_vertex(Vertex.from_str(str(vert)))
+        for edge in self._edge_dict.values():
+            new_graph.add_edge(Edge.from_str(str(edge)))
+
+        return new_graph
+
+    def get_total_weight(self) -> float:
+        return sum(edge.weight for edge in self._edge_dict.values())
+
     def save_to_file(self, filepath: str):
         filepath = f"{filepath}/{self.name}.txt"
         with open(filepath, "w", encoding="utf-8") as f:
@@ -45,7 +63,7 @@ class Graph:
 
             for edge in self._edge_dict.values():
                 f.write(str(edge) + "\n")
-
+    
     @staticmethod
     def load_from_file(filepath: str):
         import os
@@ -60,7 +78,7 @@ class Graph:
         qtd_vertex, qtd_edge = map(int, lines[0].strip().split())
 
         for i in range(1, 1 + qtd_vertex):
-            gf.add_vertex(Vertex.form_str(lines[i].strip()))
+            gf.add_vertex(Vertex.from_str(lines[i].strip()))
 
         for i in range(1 + qtd_vertex, 1 + qtd_vertex + qtd_edge):
             gf.add_edge(Edge.from_str(lines[i].strip()))

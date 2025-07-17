@@ -21,7 +21,7 @@ class Vertex:
             self.neighbors.remove(neighbor_id)
 
     @staticmethod
-    def form_str(data: str):
+    def from_str(data: str):
         parts = data.split(";")
 
         _id = parts[0]

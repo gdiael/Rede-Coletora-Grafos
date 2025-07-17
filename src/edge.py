@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from config import WEIGHT_LENGTH_FACTOR, WEIGHT_DIAMETER_FACTOR, WEIGHT_DEPTH_FACTOR
+from config import LENGTH_FACTOR, DIAMETER_FACTOR, DEPTH_FACTOR
 
 from vertex import Vertex
 
@@ -39,15 +39,15 @@ class Edge:
         dist = self.get_horizontal_length(vertices)
         if dist == 0:
             return 0.0
-        depth_diff = (v1.elevation - self.final_depth) - (v2.elevation - self.inicial_depth)
+        depth_diff = (v1.elevation - self.inicial_depth) - (v2.elevation - self.final_depth)
         return depth_diff / dist
     
     def update_weight(self, vertices: dict[str, Vertex]):
         length = self.get_horizontal_length(vertices)
         mid_depth = (self.inicial_depth + self.final_depth) / 2.0
-        self.weight = WEIGHT_LENGTH_FACTOR * length
-        self.weight += WEIGHT_DIAMETER_FACTOR * self.diameter
-        self.weight += WEIGHT_DEPTH_FACTOR * mid_depth
+        self.weight = LENGTH_FACTOR * length
+        self.weight += DIAMETER_FACTOR * self.diameter
+        self.weight += DEPTH_FACTOR * mid_depth
 
     def reverse(self):
         aux_id: str = self.inicial_id
