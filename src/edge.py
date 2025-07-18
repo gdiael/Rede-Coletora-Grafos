@@ -47,7 +47,7 @@ class Edge:
         mid_depth = (self.inicial_depth + self.final_depth) / 2.0
         self.weight = LENGTH_FACTOR * length
         self.weight += DIAMETER_FACTOR * self.diameter
-        self.weight += DEPTH_FACTOR * mid_depth
+        self.weight += DEPTH_FACTOR * mid_depth * length
 
     def reverse(self):
         aux_id: str = self.inicial_id

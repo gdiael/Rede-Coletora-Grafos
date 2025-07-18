@@ -7,6 +7,7 @@ from edge import Edge
 class Graph:
 
     name: str
+    observation: str = "demo"
 
     _vertex_dict: dict[str, Vertex] = field(default_factory=dict[str, Vertex])
     _edge_dict: dict[str, Edge] = field(default_factory=dict[str, Edge])
@@ -56,7 +57,7 @@ class Graph:
     def save_to_file(self, filepath: str):
         filepath = f"{filepath}/{self.name}.txt"
         with open(filepath, "w", encoding="utf-8") as f:
-            f.write(f"{len(self._vertex_dict)} {len(self._edge_dict)}\n")
+            f.write(f"{len(self._vertex_dict)} {len(self._edge_dict)}\n{self.observation}\n")
 
             for vert in self._vertex_dict.values():
                 f.write(str(vert) + "\n")
@@ -77,10 +78,12 @@ class Graph:
 
         qtd_vertex, qtd_edge = map(int, lines[0].strip().split())
 
-        for i in range(1, 1 + qtd_vertex):
+        gf.observation = lines[1].strip() if len(lines) > 1 else "demo"
+        
+        for i in range(2, 2 + qtd_vertex):
             gf.add_vertex(Vertex.from_str(lines[i].strip()))
 
-        for i in range(1 + qtd_vertex, 1 + qtd_vertex + qtd_edge):
+        for i in range(2 + qtd_vertex, 2 + qtd_vertex + qtd_edge):
             gf.add_edge(Edge.from_str(lines[i].strip()))
 
         return gf

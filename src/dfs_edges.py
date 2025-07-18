@@ -4,7 +4,7 @@ from edge import Edge
 
 from config import MINIMUM_DEPTH, MINIMUM_SLOP
 
-def get_edge_adjacency_dict(gf: Graph, lfg: Graph) -> dict[str, set]:
+def get_edge_adjacency_dict(gf: Graph, lfg: Graph, root_id: str) -> dict[str, set]:
     edge_adjacency = {v.id: set() for v in gf.get_vertices().values()}
     edges = gf.get_edges()
     for edge in lfg.get_edges().values():
@@ -18,6 +18,13 @@ def get_edge_adjacency_dict(gf: Graph, lfg: Graph) -> dict[str, set]:
             continue
         edge_adjacency[vid].add(edge.inicial_id)
         edge_adjacency[vid].add(edge.final_id)
+
+    if len(edge_adjacency[root_id]) == 0:
+        for edge in edges.values():
+            if edge.inicial_id == root_id or edge.final_id == root_id:
+                edge_adjacency[root_id].add(edge.id)
+                break
+
     return edge_adjacency
 
 def update_depth(edge: Edge, vertices: dict[str, Vertex], depth_list: dict[str, float], is_leaf: bool):
@@ -28,6 +35,8 @@ def update_depth(edge: Edge, vertices: dict[str, Vertex], depth_list: dict[str, 
 
     if edge.inicial_depth < depth_list[edge.inicial_id] and not is_leaf:
         edge.inicial_depth = depth_list[edge.inicial_id]
+    
+    edge.update_weight(vertices)
 
     length = edge.get_horizontal_length(vertices)
     slop = edge.get_slope(vertices)
@@ -51,19 +60,16 @@ def dfs_update_edges(grafo: Graph, grafo_linha: Graph, root_id: str):
 
     depth_list = {v.id: 0.0 for v in grafo.get_vertices().values()}
 
-    edge_adjacency_dict = get_edge_adjacency_dict(grafo, grafo_linha)
+    edge_adjacency_dict = get_edge_adjacency_dict(grafo, grafo_linha, root_id)
 
     while depth_stack:
         current_id, from_edge = depth_stack.pop()
-
-        print(f"Visiting vertex: {current_id}, from edge: {from_edge}")
 
         is_leaf = True
 
         for edge_id in edge_adjacency_dict[current_id]:
             if edge_id in visited_edges:
                 continue
-            print(f"Checking edge: {edge_id} from vertex: {current_id}")
             
             adj_edge = edges[edge_id]
             if current_id != adj_edge.final_id:
@@ -77,8 +83,11 @@ def dfs_update_edges(grafo: Graph, grafo_linha: Graph, root_id: str):
             return_stack.append((from_edge, is_leaf))
 
     # Processa em pós-ordem (volta) para calcular profundidades
+    ct = 1
     while return_stack:
         edge_id, is_leaf = return_stack.pop()
-        print(f"Updating edge: {edge_id} in return stack")
+        # print(f"Updating edge: {edge_id} in return stack")
         curr_edge = edges[edge_id]
         update_depth(curr_edge, vertices, depth_list, is_leaf)
+        curr_edge.name = f"C{ct:02d}"
+        ct += 1

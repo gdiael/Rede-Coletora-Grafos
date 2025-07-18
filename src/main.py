@@ -2,44 +2,55 @@ from graph import Graph
 from line_graph import generate_line_graph
 from mst_graph import minimum_spanning_tree
 from dfs_edges import dfs_update_edges
+import time
 
 if __name__ == "__main__":
-    testname = "grafo_01"
 
-    gf = Graph.load_from_file(f"dataset/{testname}.txt")
-    gf.print_this()
+    def optimize_graph(gf: Graph) -> Graph:
+        start_time = time.time()
+        total_weight = -1.0
 
-    total_weight = -1.0
+        for i in range(1, 9):
+            print()
+            print(f"Processing graph: step {i}...")
+            print()
 
-    for i in range(1, 6):
-        print()
-        print(f"Processing graph: step {i}...")
-        print()
+            lgf = generate_line_graph(gf)
+            mst = minimum_spanning_tree(lgf)
 
-        lgf = generate_line_graph(gf)
+            start_vertex_id = min(gf.get_vertices(), key=lambda vid: gf.get_vertices()[vid].elevation)
+            dfs_update_edges(gf, mst, start_vertex_id)
 
-        mst = minimum_spanning_tree(lgf)
-        mst.print_this()
+            local_weight = gf.get_total_weight()
+            print(f"Local weight of the graph for this step: {local_weight:.3f}")
 
-        start_vertex_id = min(gf.get_vertices(), key=lambda vid: gf.get_vertices()[vid].elevation)
+            # gf.print_this()
 
-        dfs_update_edges(gf, mst, start_vertex_id)
-        
-        local_weight = gf.get_total_weight()
-        print(f"Local weight of the graph for this step: {local_weight:.3f}")
-
-        if total_weight < 0.0:
-            total_weight = local_weight
-        else:
-            if local_weight < total_weight: 
+            if total_weight < 0.0 or local_weight < total_weight:
                 total_weight = local_weight
-            else:
-                print("No improvement in weight, stopping the process.")
-                break
-        
+                gfinal = gf.copy_me()
+
+        gfinal.name = f"{gf.name} - otm"
+        time_taken_ms = (time.time() - start_time) * 1000
+        gfinal.observation = f"Optimized in {time_taken_ms:.4f} ms"
+
+        return gfinal
+
+    graphName = input("Digite o nome do arquivo do grafo (ex: grafo_01): ").strip()
+
+    gf = Graph.load_from_file(f"dataset/{graphName}.txt")
+
+    if input("Deseja imprimir o grafo carregado? (s/n): ").strip().lower() == 's':
         gf.print_this()
 
-        gfinal = gf.copy_me()
+    if input("Deseja fazer a otimização do grafo? (s/n): ").strip().lower() == 's':
+        gfinal = optimize_graph(gf)
 
-    print("Final graph:")
-    gfinal.print_this()
+        if (input("Deseja imprimir o grafo otimizado? (s/n): ").strip().lower() == 's'):
+            print(f"Final graph: {gfinal.name} - {gfinal.observation}")
+            gfinal.print_this()
+
+        if input("Deseja salvar o grafo otimizado? (s/n): ").strip().lower() == 's':
+            gfinal.save_to_file("dataset")
+            print(f"Grafo otimizado salvo como: dataset/{gfinal.name}.txt")
+
